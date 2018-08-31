@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+
+<VBox fx:id="mainPane" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.chat.controller.MainPaneController">
+    <children>
+        <fx:include fx:id="textFieldPane" source="TextFieldPane.fxml" />
+        <fx:include fx:id="commandPane" source="CommandPane.fxml" />
+        <fx:include fx:id="buttonPane" source="ButtonPane.fxml" />
+    </children>
+</VBox>
