@@ -1,15 +1,12 @@
 package pl.chat.main;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 
 public class UserThread extends Thread {
     private Socket socket;
     private ChatServer server;
-    // private PrintWriter writer;
+    private PrintWriter writer;
 
     public UserThread(Socket socket, ChatServer server) {
         this.socket = socket;
@@ -17,17 +14,23 @@ public class UserThread extends Thread {
     }
 
     public void run() {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-             PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)) {
+        try {
+            InputStream input = socket.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+            OutputStream output = socket.getOutputStream();
+            writer = new PrintWriter(output, true);
 
-            printUsers(writer);
+            printUsers();
+
             String userName = reader.readLine();
             server.addUserName(userName);
-            String serverMessage = "New user connected: " + userName;
-            server.broadcast(serverMessage);
+            System.err.println("\t\t" + userName + " online.");     // String serverMessage = "\t\t" + userName + " online.";
+            String serverMessage = null;
+            //server.broadcast(serverMessage);
             String clientMessage;
+
             while (!(clientMessage = reader.readLine()).equals("bye")) {
-                serverMessage = "[" + userName + "]" + clientMessage;
+                serverMessage = "[" + userName + "]: " + clientMessage;
                 server.broadcast(serverMessage);
             }
 
@@ -42,7 +45,7 @@ public class UserThread extends Thread {
         }
     }
 
-    private void printUsers(PrintWriter writer) {
+    private void printUsers() {
         if (server.hasUsers()) {
             writer.println("Connected users: " + server.getUserNames());
         } else {

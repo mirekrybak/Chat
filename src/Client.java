@@ -15,8 +15,6 @@ public class Client {
         this.userName = userName;
     }
 
-    public Client() {}
-
     public Client(String hostName, int port) {
         this.hostName = hostName;
         this.port = port;
@@ -53,5 +51,4 @@ public class Client {
         Client client = new Client(hostName, port);
         client.execute();
     }
-
 }

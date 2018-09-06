@@ -26,7 +26,7 @@ public class ChatServer {
 
             while (true){
                 Socket socket = serverSocket.accept();
-                System.out.println("New user connected.");
+                System.err.println("\t\tNew user connected.");
                 UserThread newUser = new UserThread(socket, this);
                 userThreads.add(newUser);
                 newUser.start();
@@ -40,9 +40,12 @@ public class ChatServer {
     //  delivers message to all users
 
     public void broadcast(String message) {
+        /*
         for (UserThread u : userThreads) {
-            u.sendMessage(message);
+            u.sendMessage(message + " test");
         }
+        */
+        System.out.println(message);
     }
 
     //  stores username of the newly connected client
@@ -54,9 +57,12 @@ public class ChatServer {
     //  remove userThread and associated username when a client disconnected
 
     public void userRemove(String username, UserThread user) {
-        userNames.remove(username);
-        userThreads.remove(user);
-        System.out.println("The user " + username + " disconnected.");
+        boolean removeed = userNames.remove(username);
+        if (removeed) {
+            userThreads.remove(user);
+            System.err.println("The user " + username + " disconnected.");
+        }
+        // userNames.remove(username);
     }
 
     public boolean hasUsers() {
