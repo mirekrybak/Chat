@@ -1,6 +1,5 @@
 package pl.chat.main;
 
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -13,8 +12,8 @@ public class WriteThread extends Thread {
     private Socket socket;
 
     public WriteThread(Socket socket, ChatClient client) {
-        this.socket = socket;
         this.client = client;
+        this.socket = socket;
 
         try {
             OutputStream output = socket.getOutputStream();
@@ -26,17 +25,35 @@ public class WriteThread extends Thread {
     }
 
     public void run() {
+        String userNick;
+        boolean isExist;
         Scanner sc = new Scanner(System.in);
-        System.out.print("Enter your nick: ");
-        String nickname = sc.nextLine();
-        client.setUserName(nickname);
-        writer.println(client.getUserName());
+
+        do {
+            System.out.print("Enter your nick: ");
+            userNick = sc.nextLine();
+
+            writer.println("check");                                            //  polecenie wysłania listy użytkowników przez serwer
+
+            isExist = client.checkNickMultiply(userNick);
+
+//            if (isExist) {
+//                System.out.println("==========      Nick: " + userNick + "   I S T N I E J E   !!!");
+//            }
+//            System.out.println(isExist);
+
+        } while (isExist);
+
+        client.setUserName(userNick);
+        writer.println(userNick);
 
         String text;
-        while (!(text = sc.nextLine()).equals("bye")) {
-            //text = "[" + nickname + "]:   " + text;
+        do {
+            System.out.println("Pętla  użytkownik --->  serwer          TEST");
+            text = sc.nextLine();
             writer.println(text);
-        }
+        } while (!text.equals("bye"));
+        sc.close();
 
         try {
             socket.close();

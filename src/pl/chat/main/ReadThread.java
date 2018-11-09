@@ -8,12 +8,12 @@ import java.net.Socket;
 
 public class ReadThread extends Thread {
     private BufferedReader reader;
-    private Socket socket;
     private ChatClient client;
+    private Socket socket;
 
     public ReadThread(Socket socket, ChatClient client) {
-        this.socket = socket;
         this.client = client;
+        this.socket = socket;
 
         try {
             InputStream input = socket.getInputStream();
@@ -28,14 +28,19 @@ public class ReadThread extends Thread {
         while (true) {
             try {
                 String response = reader.readLine();
-                System.out.println("\n" + response);
-                if (client.getUserName() != null) {
-                    System.out.println("[" + client.getUserName() + "]: ");
+                if (response.startsWith("\u00b6")) {
+                    client.getUsers().add(response.replace("\u00b6",""));
+                } else {
+                    System.out.println(response/* + "   <--- wypisuje wiadomość kiedy nie dodaje użytkownika do zbioru"*/);
                 }
             } catch (IOException e) {
-                System.out.println("Error reading from server: " + e.getMessage());
-                e.printStackTrace();
-                System.exit(-1);
+                //  close socket when the client disconnected.
+                try {
+                    socket.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+                break;
             }
         }
     }

@@ -22,23 +22,39 @@ public class UserThread extends Thread {
 
             printUsers();
 
-            String userName = reader.readLine();
-            server.addUserName(userName);
-            System.err.println("\t\t" + userName + " online.");     // String serverMessage = "\t\t" + userName + " online.";
-            String serverMessage = null;
-            //server.broadcast(serverMessage);
-            String clientMessage;
+            String clientMessage =  reader.readLine();
+            String serverMessage;
+            String userName;
 
-            while (!(clientMessage = reader.readLine()).equals("bye")) {
+            //  something wrong !!!!
+            //  musi być pętla dopóki nick podany w klasie WriteThread nie będzie się powtarzał
+
+            do {                                                            // dodane 9.11.2018
+                if (clientMessage.equals("check")) {
+                    sendUsers();
+                }
+
+                userName = reader.readLine();
+                // System.out.println(!userName.equals("check"));
+            } while (userName.equals("check"));
+
+
+            System.out.println("Nowy użytkownik: " + userName);
+
+            server.addUsername(userName);
+
+
+            do {
+                clientMessage = reader.readLine();
                 serverMessage = "[" + userName + "]: " + clientMessage;
-                server.broadcast(serverMessage);
-            }
+                server.broadcast(serverMessage/*, this*/);                                            // server.broadcast(serverMessage, this);
+            } while (!clientMessage.equals("bye"));
 
-            server.userRemove(userName, this);
+            server.removeUser(userName, this);
             socket.close();
 
             serverMessage = userName + " has quited.";
-            server.broadcast(serverMessage);
+            server.broadcast(serverMessage/*, this*/);                                                // server.broadcast(serverMessage, this);
         } catch (IOException e) {
             System.out.println("Error in UserThread: " + e.getMessage());
             e.printStackTrace();
@@ -46,14 +62,23 @@ public class UserThread extends Thread {
     }
 
     private void printUsers() {
-        if (server.hasUsers()) {
-            writer.println("Connected users: " + server.getUserNames());
-        } else {
-            writer.println("No other user connected.");
+        writer.println("Current users:");
+        for (String user : server.getUserNames()) {
+            writer.println(user);
         }
     }
 
     public void sendMessage(String message) {
-        System.out.println(message);
+        writer.println(message);
+    }
+
+    public void sendUsers() {
+        System.out.println("Wysyłam listę użytkowników");
+        for (String user : server.getUserNames()) {
+            writer.print("\u00b6");
+            writer.println(user);
+            System.out.println(user);
+        }
+        System.out.println("Lista użytkowników wysłana.");
     }
 }

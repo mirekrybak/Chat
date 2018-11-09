@@ -3,69 +3,68 @@ package pl.chat.main;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ChatServer {
-    private int port = 7777;
-    private List<String> userNames = new LinkedList<>();
-    private List<UserThread> userThreads = new LinkedList<>();
+    private static int port = 7777;
+    private Set<String> userNames = new HashSet<>();
+    private Set<UserThread> userThreads = new HashSet<>();
 
-    public List<String> getUserNames() {
-        return userNames;                                           //  this.userNames
+    public Set<String> getUserNames() {
+        return userNames;
+    }
+
+    public ChatServer(int port) {
+        this.port = port;
     }
 
     public static void main(String[] args) {
-        ChatServer server = new ChatServer();
+        ChatServer server = new ChatServer(port);
+        server.userNames.add("Tata");
+        server.userNames.add("Mama");
         server.execute();
     }
 
     private void execute() {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
-            System.out.println("Server is listening on port " + port);
+            System.out.println("Chat server is listening on port " + port);
+            while (true) {
 
-            while (true){
                 Socket socket = serverSocket.accept();
-                System.err.println("\t\tNew user connected.");
-                UserThread newUser = new UserThread(socket, this);
+                System.out.println("\t\t\t\t    --- >   New user connected.");
+
+                UserThread newUser = new UserThread(socket, this);        //  new UserThread(socket, this);
                 userThreads.add(newUser);
                 newUser.start();
             }
         } catch (IOException e) {
-            System.out.println("Error in the server." + e.getMessage());
+            System.out.println("Error in the server: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    //  delivers message to all users
-
-    public void broadcast(String message) {
-        /*
+    public void broadcast(String message/*, UserThread user*/) {                         // broadcast(String message, UserThread user)
         for (UserThread u : userThreads) {
-            u.sendMessage(message + " test");
+            u.sendMessage(message);
         }
-        */
-        System.out.println(message);
     }
 
-    //  stores username of the newly connected client
-
-    public void addUserName(String userName) {
-        userNames.add(userName);
+    public void addUsername(String username) {
+        userNames.add(username);
     }
 
-    //  remove userThread and associated username when a client disconnected
+    //  remove associated username with UserThread when the client disconnected.
 
-    public void userRemove(String username, UserThread user) {
-        boolean removeed = userNames.remove(username);
-        if (removeed) {
+    public void removeUser(String username, UserThread user) {
+        boolean removed = userNames.remove(username);
+        if (removed) {
             userThreads.remove(user);
             System.err.println("The user " + username + " disconnected.");
         }
-        // userNames.remove(username);
     }
 
     public boolean hasUsers() {
-        return !userNames.isEmpty();                                //  !this.userNames.isEmpty();
+        return !userNames.isEmpty();                            //  !this.userNames.isEmpty();
     }
 }
