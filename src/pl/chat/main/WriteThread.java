@@ -36,12 +36,6 @@ public class WriteThread extends Thread {
             writer.println("check");                                            //  polecenie wysłania listy użytkowników przez serwer
 
             isExist = client.checkNickMultiply(userNick);
-
-//            if (isExist) {
-//                System.out.println("==========      Nick: " + userNick + "   I S T N I E J E   !!!");
-//            }
-//            System.out.println(isExist);
-
         } while (isExist);
 
         client.setUserName(userNick);

@@ -31,10 +31,13 @@ public class ChatClient {
     }
 
     public boolean checkNickMultiply(String nick) {
-        System.out.println("Sprawdzam czy nick " + nick + " jest zajęty ...");
         boolean multiply = false;
+        try {                                               // delay to send connected users
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         for (String s : users) {
-            System.out.println(s + "   <===>   " + nick + "   <---   " + s.equals(nick));
             if (s.equals(nick)) {
                 multiply = true;
                 System.out.println("Nick zajęty !!!!!");
