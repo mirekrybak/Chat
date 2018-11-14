@@ -26,21 +26,15 @@ public class UserThread extends Thread {
             String serverMessage;
             String userName;
 
-            //  something wrong !!!!
-            //  musi być pętla dopóki nick podany w klasie WriteThread nie będzie się powtarzał
-
-            do {                                                            // dodane 9.11.2018
+            do {
                 if (clientMessage.equals("check")) {
                     sendUsers();
                 }
-
                 userName = reader.readLine();
-                // System.out.println(!userName.equals("check"));
             } while (userName.equals("check"));
 
 
             System.out.println("Nowy użytkownik: " + userName);
-
             server.addUsername(userName);
 
 

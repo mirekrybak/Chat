@@ -55,7 +55,6 @@ public class ChatClient {
     public void execute() {
         try {
             Socket socket = new Socket(hostName, port);
-
             new WriteThread(socket, this).start();
             new ReadThread(socket, this).start();
         } catch (UnknownHostException e) {
