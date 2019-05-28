@@ -20,23 +20,25 @@ public class UserThread extends Thread {
             OutputStream output = socket.getOutputStream();
             writer = new PrintWriter(output, true);
 
-            printUsers();
-
-            String clientMessage =  reader.readLine();
-            String serverMessage;
             String userName;
+            String clientMessage;
+            boolean nickExist;
 
             do {
-                if (clientMessage.equals("check")) {
-                    sendUsers();
-                }
-                userName = reader.readLine();
-            } while (userName.equals("check"));
+                System.out.println("Wysyłam listę użytkowników.");
+                server.broadcast(server.userNames, this);        // wysyła listę aktualnych użytkowników do nowego klienta
+                userName = reader.readLine();                               //oczekiwanie na odpowiedź (nowy nick)
+                nickExist = checkNick(userName);                            // sprawdzenie nowego nick'a
+                System.out.println("Nick: " + userName + "\t\tnickExist: " + nickExist);
+            } while (nickExist);                                            // nick unikalny ---> opuszczenie pętli
+            sendMessage(userName);                                          //  send unique nick to client
 
+            System.out.println("OPUSZCZONO PĘTLĘ");
+
+            String serverMessage;
 
             System.out.println("Nowy użytkownik: " + userName);
             server.addUsername(userName);
-
 
             do {
                 clientMessage = reader.readLine();
@@ -55,24 +57,18 @@ public class UserThread extends Thread {
         }
     }
 
-    private void printUsers() {
-        writer.println("Current users:");
-        for (String user : server.getUserNames()) {
-            writer.println(user);
-        }
-    }
-
     public void sendMessage(String message) {
         writer.println(message);
     }
 
-    public void sendUsers() {
-        System.out.println("Wysyłam listę użytkowników");
-        for (String user : server.getUserNames()) {
-            writer.print("\u00b6");
-            writer.println(user);
-            System.out.println(user);
+    public boolean checkNick(String nick) {
+        for (String n : server.getUserNames()) {
+            //System.out.println("Nick: " + nick + "\tlist: " + n + "\tequals: " + nick.equals(n));
+            if (nick.equals(n)) {
+                return true;
+            }
         }
-        System.out.println("Lista użytkowników wysłana.");
+
+        return false;
     }
 }

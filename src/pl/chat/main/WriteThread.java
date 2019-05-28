@@ -32,14 +32,10 @@ public class WriteThread extends Thread {
         do {
             System.out.print("Enter your nick: ");
             userNick = sc.nextLine();
+            writer.println(userNick);                                       //  send nick to server
 
-            writer.println("check");                                            //  polecenie wysłania listy użytkowników przez serwer
-
-            isExist = client.checkNickMultiply(userNick);
+            isExist = client.isOnlyOne(userNick);                  //  check unique nick on the server
         } while (isExist);
-
-        client.setUserName(userNick);
-        writer.println(userNick);
 
         String text;
         do {

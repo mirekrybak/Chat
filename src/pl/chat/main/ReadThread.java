@@ -28,11 +28,7 @@ public class ReadThread extends Thread {
         while (true) {
             try {
                 String response = reader.readLine();
-                if (response.startsWith("\u00b6")) {
-                    client.getUsers().add(response.replace("\u00b6",""));
-                } else {
-                    System.out.println(response/* + "   <--- wypisuje wiadomość kiedy nie dodaje użytkownika do zbioru"*/);
-                }
+                System.out.println(response + "     ====     ===");
             } catch (IOException e) {
                 //  close socket when the client disconnected.
                 try {
@@ -44,4 +40,6 @@ public class ReadThread extends Thread {
             }
         }
     }
+
+
 }

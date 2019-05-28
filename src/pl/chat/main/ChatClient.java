@@ -3,48 +3,26 @@ package pl.chat.main;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ChatClient {
-    private Set<String> users;
+    private static List<String> users;
     private static String hostName = "localhost";
     private static int port = 7777;
-    private String userName;
 
-    public Set<String> getUsers() {
+    public static List<String> getUsers() {
         return users;
     }
 
-    public String getUserName() {
-        return this.userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public static void setUsers(List<String> users) {
+        ChatClient.users = users;
     }
 
     public ChatClient(String hostName, int port) {
-        users = new LinkedHashSet<>();
+        users = new ArrayList<>();
         this.hostName = hostName;
         this.port = port;
-    }
-
-    public boolean checkNickMultiply(String nick) {
-        boolean multiply = false;
-        try {                                               // delay to send connected users
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        for (String s : users) {
-            if (s.equals(nick)) {
-                multiply = true;
-                System.out.println("Nick zajęty !!!!!");
-                break;
-            }
-        }
-        return multiply;
     }
 
     public static void main(String[] args) {
@@ -62,5 +40,10 @@ public class ChatClient {
         } catch (IOException e) {
             System.out.println("I/O error: " + e.getMessage());
         }
+    }
+
+    public boolean isOnlyOne(String userNick) {
+        System.out.println(userNick);
+        return true;
     }
 }

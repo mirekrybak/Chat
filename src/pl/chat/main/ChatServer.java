@@ -8,7 +8,7 @@ import java.util.Set;
 
 public class ChatServer {
     private static int port = 7777;
-    private Set<String> userNames = new HashSet<>();
+    public Set<String> userNames = new HashSet<>();
     private Set<UserThread> userThreads = new HashSet<>();
 
     public Set<String> getUserNames() {
@@ -32,9 +32,9 @@ public class ChatServer {
             while (true) {
 
                 Socket socket = serverSocket.accept();
-                System.out.println("\t\t\t\t    --- >   New user connected.");
+                System.out.println("\t\t\t\t    --- >   New user connected.");          // must be log
 
-                UserThread newUser = new UserThread(socket, this);        //  new UserThread(socket, this);
+                UserThread newUser = new UserThread(socket, this);
                 userThreads.add(newUser);
                 newUser.start();
             }
@@ -44,9 +44,20 @@ public class ChatServer {
         }
     }
 
-    public void broadcast(String message/*, UserThread user*/) {                         // broadcast(String message, UserThread user)
+    public void broadcast(String message) {                                             // send messages to all users
         for (UserThread u : userThreads) {
             u.sendMessage(message);
+        }
+    }
+
+    public void broadcast(Set<String> userNames, UserThread userThread) {               //  send nicks all login users to new user
+        for (UserThread u : userThreads) {
+            if (u == userThread) {
+                for (String nick : userNames) {
+                    System.out.println(nick);
+                    u.sendMessage(nick);
+                }
+            }
         }
     }
 
