@@ -20,36 +20,48 @@ public class UserThread extends Thread {
             OutputStream output = socket.getOutputStream();
             writer = new PrintWriter(output, true);
 
-            String userName;
+            String response;
             String clientMessage;
             boolean nickExist;
 
             do {
-                System.out.println("Wysyłam listę użytkowników.");
-                server.broadcast(server.userNames, this);        // wysyła listę aktualnych użytkowników do nowego klienta
-                userName = reader.readLine();                               //oczekiwanie na odpowiedź (nowy nick)
-                nickExist = checkNick(userName);                            // sprawdzenie nowego nick'a
-                System.out.println("Nick: " + userName + "\t\tnickExist: " + nickExist);
-            } while (nickExist);                                            // nick unikalny ---> opuszczenie pętli
-            sendMessage(userName);                                          //  send unique nick to client
+                //  server.log("Wysyłam listę użytkowników.");
+                //  send users to new client
+                server.broadcast(server.userNames, this);
+                //  waiting for response (userName)
+                response = reader.readLine();
+                //  check userName is unique
+                nickExist = checkNick(response);
+                System.out.println();
+                if (nickExist) {
+                    server.broadcast("==========   Nick is used ....   ==========", this);
+                    System.out.println("Nick istnieje !!!!!!");
+                }
+            } while (nickExist);
+            sendMessage(response);                                          //  send unique nick to client
 
-            System.out.println("OPUSZCZONO PĘTLĘ");
+            System.out.println("DODANO NOWEGO UŻYTKOWNIKA:");
 
             String serverMessage;
 
-            System.out.println("Nowy użytkownik: " + userName);
-            server.addUsername(userName);
+            System.out.println("Nowy użytkownik: " + response);     // must be as log !!!!!
+            server.addUsername(response);
 
             do {
+                System.out.println("\t--> oczekiwanie na wiadomość od nowego klienta [" + response + "]");
                 clientMessage = reader.readLine();
-                serverMessage = "[" + userName + "]: " + clientMessage;
+                System.out.println("\t<-- odebranie wiadomości od nowego klienta [" + response + "]");
+                System.out.println(clientMessage);
+                serverMessage = "[" + response + "]: " + clientMessage;
+                System.out.println("\t--> wysłanie wiadomości od [" + response + "] do wszystkich użytkowników");
+                System.out.println(serverMessage);
                 server.broadcast(serverMessage/*, this*/);                                            // server.broadcast(serverMessage, this);
             } while (!clientMessage.equals("bye"));
 
-            server.removeUser(userName, this);
+            server.removeUser(response, this);
             socket.close();
 
-            serverMessage = userName + " has quited.";
+            serverMessage = response + " has quited.";
             server.broadcast(serverMessage/*, this*/);                                                // server.broadcast(serverMessage, this);
         } catch (IOException e) {
             System.out.println("Error in UserThread: " + e.getMessage());
@@ -63,8 +75,9 @@ public class UserThread extends Thread {
 
     public boolean checkNick(String nick) {
         for (String n : server.getUserNames()) {
-            //System.out.println("Nick: " + nick + "\tlist: " + n + "\tequals: " + nick.equals(n));
+            System.out.println("\t\tNick: " + nick + "\tlist: " + n + "\tequals: " + nick.equals(n));
             if (nick.equals(n)) {
+                System.out.println("\tcheckNick method: " + n + " equals " + nick + " - " + nick.equals(n));
                 return true;
             }
         }

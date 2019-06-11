@@ -23,6 +23,9 @@ public class ChatServer {
         ChatServer server = new ChatServer(port);
         server.userNames.add("Tata");
         server.userNames.add("Mama");
+        server.userNames.add("Pies");
+        server.userNames.add("Kuna");
+        server.userNames.add("Smok");
         server.execute();
     }
 
@@ -32,7 +35,7 @@ public class ChatServer {
             while (true) {
 
                 Socket socket = serverSocket.accept();
-                System.out.println("\t\t\t\t    --- >   New user connected.");          // must be log
+                System.out.println("\t\t\t\t    --- >   New user connected.");          // must be log!!!!!!!!!!!
 
                 UserThread newUser = new UserThread(socket, this);
                 userThreads.add(newUser);
@@ -50,13 +53,23 @@ public class ChatServer {
         }
     }
 
+    public void broadcast(String message, UserThread userThread) {
+        for (UserThread u : userThreads) {
+            if (u == userThread) {
+                u.sendMessage(message);
+            }
+        }
+    }
+
     public void broadcast(Set<String> userNames, UserThread userThread) {               //  send nicks all login users to new user
         for (UserThread u : userThreads) {
             if (u == userThread) {
+                u.sendMessage("nicksListExportFromServer");
                 for (String nick : userNames) {
-                    System.out.println(nick);
                     u.sendMessage(nick);
+                    System.out.println(nick + "   - wysłany !!!");                      // must be log!!!!!!!!!!!!
                 }
+                u.sendMessage("endOfList");
             }
         }
     }
@@ -71,11 +84,11 @@ public class ChatServer {
         boolean removed = userNames.remove(username);
         if (removed) {
             userThreads.remove(user);
-            System.err.println("The user " + username + " disconnected.");
+            System.err.println("The user " + username + " disconnected.");      // log !!!!!!!!!!!!!!!
         }
     }
 
-    public boolean hasUsers() {
-        return !userNames.isEmpty();                            //  !this.userNames.isEmpty();
+    public void log(String s) {
+        // TODO
     }
 }

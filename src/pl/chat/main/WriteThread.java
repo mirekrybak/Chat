@@ -8,12 +8,14 @@ import java.util.Scanner;
 
 public class WriteThread extends Thread {
     private PrintWriter writer;
+    private Scanner scanner;
     private ChatClient client;
     private Socket socket;
 
     public WriteThread(Socket socket, ChatClient client) {
-        this.client = client;
         this.socket = socket;
+        this.client = client;
+        scanner = new Scanner(System.in);
 
         try {
             OutputStream output = socket.getOutputStream();
@@ -25,25 +27,23 @@ public class WriteThread extends Thread {
     }
 
     public void run() {
-        String userNick;
-        boolean isExist;
-        Scanner sc = new Scanner(System.in);
-
         do {
-            System.out.print("Enter your nick: ");
-            userNick = sc.nextLine();
-            writer.println(userNick);                                       //  send nick to server
+            System.out.print("Podaj nick: ");
+            String nick = scanner.nextLine();
+            client.setUserName(nick);
+            writer.println(nick);
+            System.out.println("Istnieje??? " + client.isNickExist());
+        } while (client.isNickExist());     // TODO: spróbować weryfikacji w WriteThread !!!!!!!
 
-            isExist = client.isOnlyOne(userNick);                  //  check unique nick on the server
-        } while (isExist);
+        System.out.println("\t\tkurka siwa !!!!       " + client.isNickExist());
+
+        System.out.println("End of loop !!!!");
 
         String text;
         do {
-            System.out.println("Pętla  użytkownik --->  serwer          TEST");
-            text = sc.nextLine();
+            text = scanner.nextLine();
             writer.println(text);
-        } while (!text.equals("bye"));
-        sc.close();
+        } while (!text.equals("bye."));
 
         try {
             socket.close();
