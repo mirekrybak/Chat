@@ -1,15 +1,20 @@
 package pl.chat.main;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
 
 public class ChatServer {
     private static int port = 7777;
-    public Set<String> userNames = new HashSet<>();
     private Set<UserThread> userThreads = new HashSet<>();
+    private Set<String> userNames = new HashSet<>();
+    private String fileName = "logServer.txt";
+    private FileWriter writer;
+    private LocalTime time;
 
     public Set<String> getUserNames() {
         return userNames;
@@ -21,43 +26,47 @@ public class ChatServer {
 
     public static void main(String[] args) {
         ChatServer server = new ChatServer(port);
-        server.userNames.add("Tata");
-        server.userNames.add("Mama");
-        server.userNames.add("Pies");
-        server.userNames.add("Kuna");
-        server.userNames.add("Smok");
+        server.createLogFile();
         server.execute();
+    }
+
+    private void createLogFile() {
+        try {
+            writer = new FileWriter(fileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void execute() {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
-            System.out.println("Chat server is listening on port " + port);
+            String message = "Chat server is listening on port " + port;
+            System.out.println(message);
+            log(message);                                                               //  must be log!!!!!!!!!!!
             while (true) {
 
                 Socket socket = serverSocket.accept();
-                System.out.println("\t\t\t\t    --- >   New user connected.");          // must be log!!!!!!!!!!!
+                message = "\t\t\tNew user connected.";
+                System.out.println(message);
+                log(message);                                                           //  must be log!!!!!!!!!!!
 
                 UserThread newUser = new UserThread(socket, this);
                 userThreads.add(newUser);
                 newUser.start();
             }
         } catch (IOException e) {
-            System.out.println("Error in the server: " + e.getMessage());
+            String message = "Error in the server: " + e.getMessage();
+            System.out.println(message);
+            log(message);                                                               //  must be log!!!!!!!!!!!
             e.printStackTrace();
         }
     }
 
     public void broadcast(String message) {                                             // send messages to all users
         for (UserThread u : userThreads) {
-            u.sendMessage(message);
-        }
-    }
-
-    public void broadcast(String message, UserThread userThread) {
-        for (UserThread u : userThreads) {
-            if (u == userThread) {
-                u.sendMessage(message);
-            }
+            time = LocalTime.now();
+            String actualTime = time.getHour() + ":" + time.getMinute() + ":" + time.getSecond() + " " + message;
+            u.sendMessage(actualTime);
         }
     }
 
@@ -67,7 +76,8 @@ public class ChatServer {
                 u.sendMessage("nicksListExportFromServer");
                 for (String nick : userNames) {
                     u.sendMessage(nick);
-                    System.out.println(nick + "   - wysłany !!!");                      // must be log!!!!!!!!!!!!
+                    String message = "send nick: " + nick;
+                    log(message);
                 }
                 u.sendMessage("endOfList");
             }
@@ -84,11 +94,20 @@ public class ChatServer {
         boolean removed = userNames.remove(username);
         if (removed) {
             userThreads.remove(user);
-            System.err.println("The user " + username + " disconnected.");      // log !!!!!!!!!!!!!!!
+            String message = "\t\t\tThe user " + username + " disconnected.";
+            System.err.println(message);
+            log(message);                                                               //  must be log!!!!!!!!!!!
         }
     }
 
-    public void log(String s) {
+    public void log(String message) {
         // TODO
+        message = message + "\n";
+        try {
+            writer.write(message);
+            writer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

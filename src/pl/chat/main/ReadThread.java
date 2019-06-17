@@ -19,35 +19,27 @@ public class ReadThread extends Thread {
             InputStream input = socket.getInputStream();
             reader = new BufferedReader(new InputStreamReader(input));
         } catch (IOException e) {
-            System.out.println("Error getting input stream: " + e.getMessage());
+            System.out.println("Error getting input stream: " + e.getMessage());            //  system message
             e.printStackTrace();
         }
     }
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-    // TODO     UPRZĄTNĄĆ BAŁAGAN
-    ////////////////////////////////////////////////////////////////////////////////////////////
+
     public void run() {
         try {
           String response;
-
-
-            // TODO         W S Z Y S T K O   N A   R A Z I E   O K  !!!!!!!!!!!!
             while (true) {
                 response = reader.readLine();
-                // TODO: przy opuszczeniu chat'u następuje zamknięcie gniazda --> błąd odczytu
                 try {
                     if (response.equals("nicksListExportFromServer")) {
-                        client.createNicksListFromServer(reader);                //  IMPORT UŻYTKOWNIKÓW Z SERWERA
-                        client.checkNickMultiply();
+                        client.createNicksListFromServer(reader);                           //  users import from server
+                    } else {
+                        System.out.println(response);        // odpowiedź z serwera
                     }
-                } catch (NullPointerException e) {
-                    System.out.println("POWINNO ZAMKNĄĆ GNIAZDO I OPUŚCIĆ PROGRAM !!!");
+                } catch (NullPointerException e) {      // close socket & exit ReadThread
+                    System.out.println("Socket closing ...\nApplication closing ...");      //  system message
                     socket.close();
-                    System.out.println(socket.isClosed());
-                    System.exit(-5);
+                    System.exit(-7777);
                 }
-
-                System.out.println("---   odpowiedź z serwera ---> " + response + " <---");
             }
         } catch (IOException e) {
             System.out.println("Error reading from server: " + e.getMessage());

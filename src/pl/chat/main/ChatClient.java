@@ -8,33 +8,9 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class ChatClient {
-    private boolean nickExist = true;
     private static String hostName = "localhost";
     private static int port = 7777;
-    public Set<String> users;
-    private String userName = "";
-
-
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public boolean isNickExist() {
-        return nickExist;
-    }
-
-    public void setNickExist(boolean nickExist) {
-        this.nickExist = nickExist;
-    }
-
-    public void setUsers(Set<String> users) {
-        this.users = users;
-    }
+    private Set<String> users;
 
     public ChatClient(String hostName, int port) {
         this.hostName = hostName;
@@ -45,14 +21,14 @@ public class ChatClient {
     public void execute() {
         try {
             Socket socket = new Socket(hostName, port);
-            System.out.println("Connected to ChatServer ....");
+            System.out.println("Connected to ChatServer ....");                         //  system message
 
             new ReadThread(socket, this).start();
             new WriteThread(socket, this).start();
         } catch (UnknownHostException e) {
-            System.out.println("Server not found: " + e.getMessage());
+            System.out.println("Server not found: " + e.getMessage());                  //  system message
         } catch (IOException e) {
-            System.out.println("I/O error: " + e.getMessage());
+            System.out.println("I/O error: " + e.getMessage());                         //  system message
         }
     }
 
@@ -64,7 +40,7 @@ public class ChatClient {
     public void createNicksListFromServer(BufferedReader reader) {
         String nick;
 
-        System.out.println("\t\t===   IMPORT NICKÓW Z SERWERA !!!!  ===");
+        System.out.println("\t\t===   IMPORT NICKÓW Z SERWERA !!!!  ===");              //  system message
         try {
             while (!(nick = reader.readLine()).equals("endOfList")) {
                 System.out.println("\t\t\t" + nick);
@@ -73,22 +49,25 @@ public class ChatClient {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        System.out.println("\t\t===   IMPORT NICKÓW ZAKOŃCZONY !!!!   ===");
-
+        System.out.println("\t\t===   IMPORT NICKÓW ZAKOŃCZONY !!!!   ===");            //  system message
     }
 
-    public void checkNickMultiply() {
-        for (String s : users) {
-            System.out.print("userName: " + userName + "\t");
-            System.out.println("z listy: "  + s + "\tequals: " + userName.equals(s));
-            if (userName.equals(s)) {  //
-                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!   Podany nick zajęty !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                nickExist = true;         //
-                break;
-            } else {
-                nickExist = false;
+    public boolean checkNickMultiply(String checkNick) {
+        if (checkNick.length() > 0) {
+            for (String s : users) {
+                if (checkNick.equals(s)) {
+                    System.out.println(checkNick + "   -   I S T N I E J E   ! ! !");   //  system message
+                    return true;
+                }
             }
         }
+
+        System.out.println(checkNick + "   -   U N I K A L N Y   ! ! !");               //  system message
+        return false;
+    }
+
+    public void log(String message) {
+        message = message + "\n";
+
     }
 }
