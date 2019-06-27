@@ -45,6 +45,6 @@ public class TextFieldPaneController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        System.out.println("Init: TextFieldPaneController.");
+
     }
 }

@@ -22,6 +22,6 @@ public class CommandPaneController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        System.out.println("Init: CommandPaneController.");
+
     }
 }

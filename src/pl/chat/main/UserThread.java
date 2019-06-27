@@ -7,7 +7,7 @@ public class UserThread extends Thread {
     private Socket socket;
     private ChatServer server;
     private PrintWriter writer;
-    private String response;
+    private String nick;
 
     public UserThread(Socket socket, ChatServer server) {
         this.socket = socket;
@@ -21,49 +21,46 @@ public class UserThread extends Thread {
             OutputStream output = socket.getOutputStream();
             writer = new PrintWriter(output, true);
 
-
             String clientMessage;
             boolean nickExist;
 
             do {
-                server.log("Send connected users to new client.");
                 //  send users to new client
                 server.broadcast(server.getUserNames(), this);
-                //  waiting for response (userName)
-                response = reader.readLine();
+                //  waiting for nick (userName)
+                nick = reader.readLine();
                 //  check userName is unique
-                nickExist = checkNick(response);
+                nickExist = checkNick(nick);
             } while (nickExist);
 
-            server.addUsername(response);
-            String serverMessage = "\t\t\tNew user added: " + response;
-            server.log(serverMessage);
+            server.addUsername(nick);
+            String serverMessage;               // = "\t\t\tNew user added: " + nick;
 
             do {
                 clientMessage = reader.readLine();
-                serverMessage = "[" + response + "]: " + clientMessage;
-                server.broadcast(serverMessage);                                            // server.broadcast(serverMessage, this);
+                serverMessage = server.actualTime() + " [" + nick + "]: " + clientMessage;
+                server.broadcast(serverMessage);
             } while (!clientMessage.equals("bye"));
 
             removeUserAndCloseSocket();
 
-//            server.removeUser(response, this);
+//            server.removeUser(nick, this);
 //            socket.close();
 
-            serverMessage = "\t\t\t" + response + " has quited.";
-            server.log(serverMessage);
+            serverMessage = "\t\t\t" + nick + " has quited.";
             server.broadcast(serverMessage);                                                // server.broadcast(serverMessage, this);
         } catch (IOException e) {
             String message = "Error in UserThread: " + e.getMessage();
             System.out.println(message);
-            server.log(message);
             removeUserAndCloseSocket();
             e.printStackTrace();
         }
     }
 
+
+
     private void removeUserAndCloseSocket() {
-        server.removeUser(response, this);
+        server.removeUser(nick, this);
         try {
             socket.close();
         } catch (IOException e) {
