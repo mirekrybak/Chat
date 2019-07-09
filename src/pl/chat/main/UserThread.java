@@ -38,7 +38,7 @@ public class UserThread extends Thread {
 
             do {
                 clientMessage = reader.readLine();
-                serverMessage = server.actualTime() + " [" + nick + "]: " + clientMessage;
+                serverMessage = server.actualTime() + ": " + nick + ": " + clientMessage;
                 server.broadcast(serverMessage);
             } while (!clientMessage.equals("bye"));
 

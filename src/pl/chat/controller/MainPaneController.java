@@ -8,26 +8,23 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
-import pl.chat.main.ChatClient;
 import pl.chat.main.ClientFX;
 
-import java.io.IOException;
-import java.net.Socket;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.concurrent.Flow;
 
 public class MainPaneController implements Initializable, Runnable {
+
+    public static MainPaneController mainPaneController;        //      TODO
 
     @FXML
     private ButtonPaneController buttonPaneController;
 
     @FXML
-    private TextFieldPaneController textFieldPaneController;
+    public TextFieldPaneController textFieldPaneController;     //      TODO
 
     @FXML
-    private CommandPaneController commandPaneController;
+    public CommandPaneController commandPaneController;         //      TODO
 
     private ClientFX client;
     private String hostName = "localhost";
@@ -35,6 +32,8 @@ public class MainPaneController implements Initializable, Runnable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        mainPaneController = this;                              //      TODO
+
         Button connectButton = buttonPaneController.getConnectButton();
         Button disconnectButton = buttonPaneController.getDisconnectButton();
         Button exitButton = buttonPaneController.getExitButton();
@@ -53,23 +52,23 @@ public class MainPaneController implements Initializable, Runnable {
         connectButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                usersTextArea.clear();
+                //usersTextArea.clear();
                 client = new ClientFX(hostName, port);
 
-                //  waiting for end of nicks import from server
-                while (client.isImported() == false) {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
+//                //  waiting for end of nicks import from server
+//                while (client.isImported() == false) {
+//                    try {
+//                        Thread.sleep(100);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
 
                 //  print nicks list in userTextArea
-                for (String s : client.getUsers()) {
-                    s = s + "\n";
-                    usersTextArea.appendText(s);
-                }
+//                for (String s : client.getUsers()) {
+//                    s = s + "\n";
+//                    usersTextArea.appendText(s);
+//                }
 
                 //connectButton.setDisable(true);
                 //disconnectButton.setDisable(false);
@@ -96,6 +95,5 @@ public class MainPaneController implements Initializable, Runnable {
 
     @Override
     public void run() {
-        System.out.println("C z e k a m y ..........................................................................");
     }
 }

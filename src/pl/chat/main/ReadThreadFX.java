@@ -11,6 +11,8 @@ public class ReadThreadFX extends Thread {
     private ClientFX client;
     private Socket socket;
 
+    UsersChecking checkNick = new UsersChecking();
+
     public ReadThreadFX(Socket socket, ClientFX client) {
         this.socket = socket;
         this.client = client;
@@ -22,21 +24,22 @@ public class ReadThreadFX extends Thread {
             System.out.println("Error getting input stream: " + e.getMessage());            //  system message
             e.printStackTrace();
         }
-
-        //System.out.println("ReadThreadFX init ....");
     }
 
     public void run() {
+        String response;
         try {
-            String response;
             while (true) {
                 response = reader.readLine();
-                //System.out.println("\t\t\t\t\tSTRUMIEŃ Z SERWERA:  " + response);
+                System.out.println(response);
                 try {
-                    //System.out.println("\t\t\tOczekiwanie na listę userów z serwera ...");
                     if (response.equals("nicksListExportFromServer")) {
-                        client.createNicksListFromServer(reader);                           //  users import from server
+                        checkNick.downloadNicksFromServer(reader);
+                        //client.downloadNicksFromServer(reader);                           //  users import from server
+                        checkNick.printNicksList();
                     } else {
+                        checkNick.printResponse(response);
+                        //mainPaneController.textFieldPaneController.getChatTextArea().appendText(response);      //      TODO
                         System.out.println("---> " + response);        // odpowiedź z serwera
                     }
                 } catch (NullPointerException e) {      // close socket & exit ReadThread
@@ -45,9 +48,12 @@ public class ReadThreadFX extends Thread {
                     System.exit(-777);
                 }
             }
+
         } catch (IOException e) {
             System.out.println("Error reading from server: " + e.getMessage());
             e.printStackTrace();
         }
+
+        System.out.println("NIEDOBRZE !!!!!!!!!!!!!!!!!!!!!!!");
     }
 }

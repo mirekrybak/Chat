@@ -12,6 +12,8 @@ public class WriteThreadFX extends Thread {
     private Scanner scanner;
     private Socket socket;
 
+    UsersChecking checkNick = new UsersChecking();
+
     public WriteThreadFX(Socket socket, ClientFX client) {
         this.socket = socket;
         this.client = client;
@@ -34,8 +36,8 @@ public class WriteThreadFX extends Thread {
             System.out.print("Podaj nick: ");                                           // nick input !!!!!
             text = scanner.nextLine();
             writer.println(text);
-        } while (client.checkNickMultiply(text));
-
+//        } while (client.checkNickMultiply(text));
+        } while (checkNick.checkNickMultiply(text));
         do {
             text = scanner.nextLine();
             writer.println(text);
