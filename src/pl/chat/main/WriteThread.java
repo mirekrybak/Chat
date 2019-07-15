@@ -29,6 +29,8 @@ public class WriteThread extends Thread {
     public void run() {
         String text;
         do {
+
+
             System.out.print("Podaj nick: ");                                           // nick input !!!!!
             text = scanner.nextLine();
             writer.println(text);

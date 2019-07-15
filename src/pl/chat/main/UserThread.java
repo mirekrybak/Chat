@@ -57,8 +57,6 @@ public class UserThread extends Thread {
         }
     }
 
-
-
     private void removeUserAndCloseSocket() {
         server.removeUser(nick, this);
         try {

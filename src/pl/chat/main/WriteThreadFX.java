@@ -12,7 +12,7 @@ public class WriteThreadFX extends Thread {
     private Scanner scanner;
     private Socket socket;
 
-    UsersChecking checkNick = new UsersChecking();
+    UsersCheck checkNick = new UsersCheck();
 
     public WriteThreadFX(Socket socket, ClientFX client) {
         this.socket = socket;

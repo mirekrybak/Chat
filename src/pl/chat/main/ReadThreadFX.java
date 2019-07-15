@@ -6,12 +6,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
+import static pl.chat.controller.MainPaneController.mainPaneController;
+
 public class ReadThreadFX extends Thread {
     private BufferedReader reader;
     private ClientFX client;
     private Socket socket;
 
-    UsersChecking checkNick = new UsersChecking();
+    UsersCheck checkNick = new UsersCheck();
 
     public ReadThreadFX(Socket socket, ClientFX client) {
         this.socket = socket;
@@ -26,34 +28,34 @@ public class ReadThreadFX extends Thread {
         }
     }
 
+    private void printNicksList() {
+        mainPaneController.textFieldPaneController.getUsersTextArea().clear();
+        for (String s : checkNick.getUsers()) {
+            s = s + "\n";
+            mainPaneController.textFieldPaneController.getUsersTextArea().appendText(s);
+        }
+    }
+
+    private void printResponse(String response) {
+        String text = response + "\n";
+        mainPaneController.textFieldPaneController.getChatTextArea().appendText(text);
+    }
+
     public void run() {
         String response;
-        try {
-            while (true) {
+        while (true) {
+            try {
                 response = reader.readLine();
                 System.out.println(response);
-                try {
-                    if (response.equals("nicksListExportFromServer")) {
-                        checkNick.downloadNicksFromServer(reader);
-                        //client.downloadNicksFromServer(reader);                           //  users import from server
-                        checkNick.printNicksList();
-                    } else {
-                        checkNick.printResponse(response);
-                        //mainPaneController.textFieldPaneController.getChatTextArea().appendText(response);      //      TODO
-                        System.out.println("---> " + response);        // odpowiedź z serwera
-                    }
-                } catch (NullPointerException e) {      // close socket & exit ReadThread
-                    System.out.println("Socket closing ...\nApplication closing ...");      //  system message
-                    socket.close();
-                    System.exit(-777);
+                if (response.equals("nicksListExportFromServer")) {
+                    checkNick.downloadNicksFromServer(reader);
+                    printNicksList();
+                } else {
+                    printResponse(response);
                 }
+            } catch (IOException e) {
+                break;
             }
-
-        } catch (IOException e) {
-            System.out.println("Error reading from server: " + e.getMessage());
-            e.printStackTrace();
         }
-
-        System.out.println("NIEDOBRZE !!!!!!!!!!!!!!!!!!!!!!!");
     }
 }

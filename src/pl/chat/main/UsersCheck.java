@@ -5,11 +5,13 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.TreeSet;
 
-import static pl.chat.controller.MainPaneController.mainPaneController;
-
-public class UsersChecking {
+public class UsersCheck {
     private Set<String> users;
     private boolean imported = false;
+
+    public Set<String> getUsers() {
+        return users;
+    }
 
     public void downloadNicksFromServer(BufferedReader reader) {
         String nick;
@@ -40,18 +42,5 @@ public class UsersChecking {
 
         System.out.println(checkNick + "   -   U N I K A L N Y   ! ! !");               //  system message
         return false;
-    }
-
-    public void printNicksList() {
-        mainPaneController.textFieldPaneController.getUsersTextArea().clear();
-        for (String s : users) {
-            s = s + "\n";
-            mainPaneController.textFieldPaneController.getUsersTextArea().appendText(s);
-        }
-    }
-
-    public void printResponse(String response) {
-        String text = response + "\n";
-        mainPaneController.textFieldPaneController.getChatTextArea().appendText(text);
     }
 }
