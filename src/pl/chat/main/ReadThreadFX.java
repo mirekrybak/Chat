@@ -13,8 +13,6 @@ public class ReadThreadFX extends Thread {
     private ClientFX client;
     private Socket socket;
 
-    UsersCheck checkNick = new UsersCheck();
-
     public ReadThreadFX(Socket socket, ClientFX client) {
         this.socket = socket;
         this.client = client;
@@ -23,16 +21,15 @@ public class ReadThreadFX extends Thread {
             InputStream input = socket.getInputStream();
             reader = new BufferedReader(new InputStreamReader(input));
         } catch (IOException e) {
-            System.out.println("Error getting input stream: " + e.getMessage());            //  system message
-            e.printStackTrace();
+            client.log("Client system message: error getting input stream: ");            //  system message
         }
     }
 
     private void printNicksList() {
         mainPaneController.textFieldPaneController.getUsersTextArea().clear();
-        for (String s : checkNick.getUsers()) {
-            s = s + "\n";
-            mainPaneController.textFieldPaneController.getUsersTextArea().appendText(s);
+        for (String s : client.getUsers()) {
+            mainPaneController.users.add(s);
+            mainPaneController.textFieldPaneController.getUsersTextArea().appendText(s + "\n");
         }
     }
 
@@ -46,9 +43,8 @@ public class ReadThreadFX extends Thread {
         while (true) {
             try {
                 response = reader.readLine();
-                System.out.println(response);
                 if (response.equals("nicksListExportFromServer")) {
-                    checkNick.downloadNicksFromServer(reader);
+                    client.downloadNicksFromServer(reader);
                     printNicksList();
                 } else {
                     printResponse(response);

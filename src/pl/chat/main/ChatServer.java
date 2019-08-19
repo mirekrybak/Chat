@@ -27,18 +27,14 @@ public class ChatServer {
     }
 
     private void execute() {
-        userNames.add("Wodnik");
         userNames.add("Ryby");
         userNames.add("Baran");
         userNames.add("Byk");
-        userNames.add("Skorpion");
-        userNames.add("Strzelec");
 
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             String message = "Chat server is listening on port " + port;
             System.out.println(message);
             while (true) {
-
                 Socket socket = serverSocket.accept();
                 message = "\t\t\tNew user connected.";
                 System.out.println(message);
@@ -54,7 +50,7 @@ public class ChatServer {
         }
     }
 
-    public String actualTime() {
+    public String serverTime() {
         String time = LocalTime.now().truncatedTo(ChronoUnit.SECONDS).toString();
         return time;
     }
@@ -65,22 +61,15 @@ public class ChatServer {
         }
     }
 
-
-
-    public void broadcast(Set<String> userNames, UserThread userThread) {               //  send nicks all login users to new user
+    public void broadcast(Set<String> userNames) {               //  send nicks all login users to new user
         for (UserThread u : userThreads) {
-            //if (u == userThread) {
                 u.sendMessage("nicksListExportFromServer");
                 for (String nick : userNames) {
                     u.sendMessage(nick);
                 }
                 u.sendMessage("endOfList");
-
-            //}
         }
     }
-
-
 
     public void addUsername(String username) {
         userNames.add(username);
@@ -96,15 +85,4 @@ public class ChatServer {
             System.err.println(message);
         }
     }
-
-//    public void log(String message) {
-//        // TODO
-//        message = message + "\n";
-//        try {
-//            writer.write(message);
-//            writer.flush();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
 }

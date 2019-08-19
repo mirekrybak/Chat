@@ -26,29 +26,37 @@ public class UserThread extends Thread {
 
             do {
                 //  send users to new client
-                server.broadcast(server.getUserNames(), this);
+                server.broadcast(server.getUserNames());
                 //  waiting for nick (userName)
                 nick = reader.readLine();
                 //  check userName is unique
                 nickExist = checkNick(nick);
+                System.out.println("Enter nick loop .........................");
             } while (nickExist);
 
+            System.out.println("Nick added. Loop quited ....................");
+
             server.addUsername(nick);
-            String serverMessage;               // = "\t\t\tNew user added: " + nick;
+            server.broadcast(server.getUserNames());
+            String serverMessage;
 
             do {
                 clientMessage = reader.readLine();
-                serverMessage = server.actualTime() + ": " + nick + ": " + clientMessage;
-                server.broadcast(serverMessage);
-            } while (!clientMessage.equals("bye"));
+                serverMessage = server.serverTime() + ": " + nick + ": " + clientMessage;
+                if (clientMessage.length() > 0) {
+                    server.broadcast(serverMessage);
+                }
+            } while (!clientMessage.equals(""));
 
             removeUserAndCloseSocket();
+            server.broadcast(server.getUserNames());
+            System.out.println("Usunięty " + nick);
 
 //            server.removeUser(nick, this);
 //            socket.close();
 
             serverMessage = "\t\t\t" + nick + " has quited.";
-            server.broadcast(serverMessage);                                                // server.broadcast(serverMessage, this);
+            server.broadcast(serverMessage);
         } catch (IOException e) {
             String message = "Error in UserThread: " + e.getMessage();
             System.out.println(message);
@@ -76,7 +84,6 @@ public class UserThread extends Thread {
                 return true;
             }
         }
-
         return false;
     }
 }

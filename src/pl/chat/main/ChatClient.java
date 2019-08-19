@@ -68,6 +68,5 @@ public class ChatClient {
 
     public void log(String message) {
         message = message + "\n";
-
     }
 }
